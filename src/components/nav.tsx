@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { GitHubStarBadge } from "./ui/github-star-badge";
 
 export function Nav() {
@@ -27,7 +28,15 @@ export function Nav() {
         >
           Molebie AI
         </a>
-        <GitHubStarBadge />
+        <div className="flex items-center gap-4">
+          <Link
+            href="/architecture"
+            className="hidden sm:block text-sm font-bold uppercase tracking-wider text-bg-white/60 hover:text-accent-yellow transition-colors"
+          >
+            Architecture
+          </Link>
+          <GitHubStarBadge />
+        </div>
       </div>
     </nav>
   );

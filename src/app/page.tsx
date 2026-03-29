@@ -12,13 +12,9 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
-        <div className="h-[3px] bg-accent-yellow" />
         <Features />
-        <div className="h-[3px] bg-accent-yellow" />
         <HowItWorks />
-        <div className="h-[3px] bg-accent-yellow" />
         <SystemRequirements />
-        <div className="h-[3px] bg-accent-yellow" />
         <Architecture />
       </main>
       <Footer />

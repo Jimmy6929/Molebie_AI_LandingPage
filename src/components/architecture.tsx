@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SectionHeading } from "./ui/section-heading";
 import { AnimateIn } from "./ui/animate-in";
 
@@ -149,6 +150,20 @@ export function Architecture() {
             />
           </AnimateIn>
         </div>
+
+        <AnimateIn delay={0.45}>
+          <div className="mt-16 flex items-center gap-6">
+            <Link
+              href="/architecture"
+              className="inline-block px-8 py-4 bg-accent-yellow text-base-black font-black uppercase tracking-widest text-sm hover:bg-bg-white transition-colors"
+            >
+              View Full Architecture — 13 Diagrams
+            </Link>
+            <span className="hidden sm:block text-bg-white/40 text-sm font-mono">
+              Request flows, RAG, voice, DB schema, deployment, and more
+            </span>
+          </div>
+        </AnimateIn>
       </div>
     </section>
   );

@@ -13,7 +13,7 @@ function detectOS(): OS {
   return "unix";
 }
 
-export function OsTabs() {
+export function OsTabs({ inverted = false }: { inverted?: boolean }) {
   const [activeTab, setActiveTab] = useState<OS>("unix");
 
   useEffect(() => {
@@ -23,15 +23,21 @@ export function OsTabs() {
   const command =
     activeTab === "unix" ? INSTALL_COMMAND_UNIX : INSTALL_COMMAND_WINDOWS;
 
+  const activeClass = inverted
+    ? "bg-base-black text-accent-yellow"
+    : "bg-accent-yellow text-base-black";
+
+  const inactiveClass = inverted
+    ? "border-2 border-base-black/40 text-base-black hover:border-base-black"
+    : "border-2 border-accent-yellow/40 text-bg-white hover:border-accent-yellow";
+
   return (
     <div className="w-full max-w-2xl">
       <div className="flex gap-[3px] mb-[3px]">
         <button
           onClick={() => setActiveTab("unix")}
           className={`px-6 py-3 text-sm font-bold uppercase tracking-widest transition-colors ${
-            activeTab === "unix"
-              ? "bg-accent-yellow text-base-black"
-              : "border-2 border-accent-yellow/40 text-bg-white hover:border-accent-yellow"
+            activeTab === "unix" ? activeClass : inactiveClass
           }`}
         >
           macOS / Linux
@@ -39,16 +45,14 @@ export function OsTabs() {
         <button
           onClick={() => setActiveTab("windows")}
           className={`px-6 py-3 text-sm font-bold uppercase tracking-widest transition-colors ${
-            activeTab === "windows"
-              ? "bg-accent-yellow text-base-black"
-              : "border-2 border-accent-yellow/40 text-bg-white hover:border-accent-yellow"
+            activeTab === "windows" ? activeClass : inactiveClass
           }`}
         >
           Windows (WSL2)
         </button>
       </div>
-      <div className="relative border-2 border-accent-yellow bg-base-black p-6">
-        <code className="font-mono text-sm md:text-base text-accent-yellow break-all">
+      <div className="flex items-center gap-2 border-2 border-base-black bg-base-black p-4">
+        <code className="font-mono text-sm md:text-base text-accent-yellow break-all flex-1 mr-2">
           {command}
         </code>
         <CopyButton text={command} />
