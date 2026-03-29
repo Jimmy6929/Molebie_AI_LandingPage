@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ARCHITECTURE_SECTIONS, SERVICE_TABLE } from "@/lib/architecture-data";
 import { MermaidDiagram } from "./ui/mermaid-diagram";
 import { AnimateIn } from "./ui/animate-in";
@@ -275,11 +276,8 @@ export function ArchitecturePage() {
       {/* Top nav bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-base-black border-b-[3px] border-accent-yellow">
         <div className="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-2xl font-black text-accent-yellow uppercase tracking-widest"
-          >
-            Molebie AI
+          <Link href="/" className="flex-shrink-0">
+            <Image src="/logo.png" alt="Molebie AI" width={160} height={40} className="h-20 w-auto" />
           </Link>
           <div className="flex items-center gap-6">
             <span className="hidden sm:block text-sm font-mono text-bg-white/40 uppercase tracking-widest">
@@ -349,9 +347,7 @@ export function ArchitecturePage() {
       <footer className="bg-base-black px-6 py-12">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-start justify-between gap-6">
           <div>
-            <span className="text-2xl font-black text-accent-yellow uppercase tracking-widest">
-              Molebie AI
-            </span>
+            <Image src="/logo.png" alt="Molebie AI" width={160} height={40} className="h-20 w-auto" />
             <p className="text-bg-white/40 text-sm mt-1">
               Full system architecture documentation
             </p>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { GitHubStarBadge } from "./ui/github-star-badge";
 
 export function Nav() {
@@ -22,11 +23,14 @@ export function Nav() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a
-          href="#"
-          className="text-2xl font-black text-accent-yellow uppercase tracking-widest"
-        >
-          Molebie AI
+        <a href="#" className="flex-shrink-0">
+          <Image
+            src="/logo.png"
+            alt="Molebie AI"
+            width={160}
+            height={40}
+            className="h-20 w-auto"
+          />
         </a>
         <div className="flex items-center gap-4">
           <Link

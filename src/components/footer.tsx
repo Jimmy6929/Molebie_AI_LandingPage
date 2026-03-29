@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { GITHUB_REPO } from "@/lib/constants";
 
 export function Footer() {
@@ -7,9 +8,13 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="flex flex-col md:flex-row items-start justify-between gap-6">
           <div className="text-left">
-            <span className="text-2xl font-black text-accent-yellow uppercase tracking-widest">
-              Molebie AI
-            </span>
+            <Image
+              src="/logo.png"
+              alt="Molebie AI"
+              width={160}
+              height={40}
+              className="h-20 w-auto"
+            />
             <p className="text-bg-white/60 text-sm mt-1">
               Built for privacy-conscious developers who want to own their data.
             </p>
