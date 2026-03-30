@@ -37,7 +37,7 @@ const badgeIcons: Record<string, React.ReactNode> = {
 
 export function TrustBadges() {
   return (
-    <section className="bg-surface-dark py-12 lg:py-16" aria-label="Trust badges">
+    <section className="py-12 lg:py-16" aria-label="Trust badges">
       <div className="max-w-7xl mx-auto px-6">
         <AnimateIn>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-[3px] bg-accent-yellow p-[3px]">

@@ -7,7 +7,7 @@ import { FeatureIcon } from "./ui/feature-icon";
 export function Demo() {
   return (
     <section
-      className="bg-surface-dark min-h-screen flex items-center py-24 lg:py-32"
+      className="min-h-screen flex items-center py-24 lg:py-32"
       aria-label="Demo"
     >
       <div className="max-w-7xl mx-auto px-6 w-full">

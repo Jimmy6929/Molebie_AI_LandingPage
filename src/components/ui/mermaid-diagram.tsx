@@ -47,12 +47,12 @@ const SWISS_THEME = {
     activationBkgColor: "#111111",
     activationBorderColor: "#FFCC00",
     sequenceNumberColor: "#0A0A0A",
-    entityBkg: "#0A0A0A",
+    entityBkg: "#1A1A1A",
     entityBorder: "#FFCC00",
-    entityTextColor: "#FFFFFF",
+    entityTextColor: "#FFCC00",
     relationColor: "#FFCC00",
-    attributeBackgroundColorEven: "#0A0A0A",
-    attributeBackgroundColorOdd: "#111111",
+    attributeBackgroundColorEven: "#1A1A1A",
+    attributeBackgroundColorOdd: "#2A2A2A",
     cScale0: "#FFCC00",
     cScale1: "#FFFFFF",
   },
@@ -282,7 +282,7 @@ function DiagramViewer({
       >
         <div
           ref={contentRef}
-          className="origin-top-left [&_svg]:max-w-none [&_svg]:h-auto p-6"
+          className="origin-top-left [&_svg]:max-w-none [&_svg]:h-auto p-6 [&_.er.entityBox]:!fill-[#1A1A1A] [&_.er.entityLabel]:!fill-[#FFCC00] [&_.er.attributeBoxEven]:!fill-[#1A1A1A] [&_.er.attributeBoxOdd]:!fill-[#2A2A2A] [&_.er_text]:!fill-[#FFCC00]"
           style={{
             transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
             willChange: "transform",
@@ -319,7 +319,40 @@ export function MermaidDiagram({
       try {
         const uniqueId = `mermaid-${id}-${Date.now()}`;
         const { svg: renderedSvg } = await mermaid.render(uniqueId, chart);
-        setSvg(renderedSvg);
+
+        // Inject broad CSS overrides — targets all text and rects in SVG
+        const overrideStyles = `<style>
+          /* ER diagram — entity boxes */
+          rect[class*="entityBox"], rect[class*="attributeBox"] { stroke: #FFCC00 !important; }
+          rect[class*="entityBox"] { fill: #1A1A1A !important; }
+          rect[class*="attributeBoxEven"] { fill: #1A1A1A !important; }
+          rect[class*="attributeBoxOdd"] { fill: #2A2A2A !important; }
+          /* All text in the SVG — yellow */
+          text { fill: #FFCC00 !important; }
+          tspan { fill: #FFCC00 !important; }
+          /* Relationship lines and markers */
+          path[class*="relation"], line[class*="relation"] { stroke: #FFCC00 !important; }
+          marker path { fill: #FFCC00 !important; stroke: #FFCC00 !important; }
+          /* Catch-all for any rect that's white/light gray */
+          rect[fill="#ffffff"], rect[fill="#f2f2f2"], rect[fill="white"],
+          rect[fill="#FFFFFF"], rect[fill="#F2F2F2"],
+          rect[fill="#f4f4f4"], rect[fill="#F4F4F4"],
+          rect[fill="#e8e8e8"], rect[fill="#E8E8E8"],
+          rect[fill="#eee"], rect[fill="#ddd"],
+          rect[fill="#d5d5d5"], rect[fill="#D5D5D5"] { fill: #1A1A1A !important; }
+          /* Catch-all for any rect with light fills */
+          rect[fill^="#f"], rect[fill^="#F"], rect[fill^="#e"], rect[fill^="#E"],
+          rect[fill^="#d"], rect[fill^="#D"], rect[fill^="#c"], rect[fill^="#C"] { fill: #2A2A2A !important; }
+          rect[fill="white"], rect[fill="White"], rect[fill="#fff"] { fill: #1A1A1A !important; }
+          /* Black text override */
+          text[fill="#000"], text[fill="#000000"], text[fill="black"],
+          text[fill="#333"], text[fill="#333333"] { fill: #FFCC00 !important; }
+          tspan[fill="#000"], tspan[fill="#000000"], tspan[fill="black"] { fill: #FFCC00 !important; }
+        </style>`;
+
+        const patched = renderedSvg.replace("</svg>", `${overrideStyles}</svg>`);
+
+        setSvg(patched);
         setError("");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to render diagram");

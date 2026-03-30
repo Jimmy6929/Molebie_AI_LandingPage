@@ -5,7 +5,7 @@ import { AnimateIn } from "./ui/animate-in";
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="bg-base-black min-h-screen flex items-center py-24 lg:py-32" aria-label="How it works">
+    <section id="how-it-works" className="min-h-screen flex items-center py-24 lg:py-32" aria-label="How it works">
       <div className="max-w-7xl mx-auto px-6 w-full">
         <AnimateIn>
           <SectionHeading>Up and Running in 60 Seconds</SectionHeading>

@@ -37,6 +37,7 @@ export async function joinWaitlist(
   const adminSecret = process.env.NHOST_HASURA_ADMIN_SECRET;
 
   if (!graphqlUrl || !adminSecret) {
+    console.error("[waitlist] Missing config — url:", !!graphqlUrl, "secret:", !!adminSecret, "secret length:", adminSecret?.length);
     return { success: false, message: "Waitlist is not configured yet. Please try again later." };
   }
 
@@ -54,7 +55,8 @@ export async function joinWaitlist(
     });
 
     if (!res.ok) {
-      console.error("[waitlist] HTTP error:", res.status, await res.text());
+      const body = await res.text();
+      console.error("[waitlist] HTTP error:", res.status, body);
       return { success: false, message: "Something went wrong. Please try again." };
     }
 
@@ -64,12 +66,12 @@ export async function joinWaitlist(
       const msg = json.errors[0].message ?? "";
       console.error("[waitlist] GraphQL error:", msg);
       if (msg.includes("uniqueness violation") || msg.includes("duplicate")) {
-        return { success: true, message: "You're already on the list!" };
+        return { success: true, message: "You're already subscribed!" };
       }
       return { success: false, message: "Something went wrong. Please try again." };
     }
 
-    return { success: true, message: "You're on the list!" };
+    return { success: true, message: "You're subscribed for updates!" };
   } catch (err) {
     console.error("[waitlist] Unexpected error:", err);
     return { success: false, message: "Something went wrong. Please try again." };

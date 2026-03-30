@@ -4,7 +4,7 @@ import { WaitlistForm } from "./ui/waitlist-form";
 
 export function Footer() {
   return (
-    <footer className="bg-base-black" aria-label="Footer">
+    <footer aria-label="Footer">
       <div className="h-[3px] bg-accent-yellow" />
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">

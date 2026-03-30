@@ -45,7 +45,7 @@ export function WaitlistForm({
           disabled={pending}
           className={`${btnBg} px-6 py-3 font-black uppercase tracking-widest text-sm transition-opacity disabled:opacity-60`}
         >
-          {pending ? "Joining..." : "Join the Waitlist"}
+          {pending ? "Subscribing..." : "Get Updates"}
         </button>
       </form>
 

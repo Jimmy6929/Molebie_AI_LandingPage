@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { GeometricBackground } from "@/components/ui/geometric-bg";
 import "./globals.css";
 
 const inter = Inter({
@@ -68,7 +69,14 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
-        {children}
+        <div className="relative">
+          {/* Global geometric background — behind all content */}
+          <GeometricBackground />
+          {/* Page content — above shapes */}
+          <div className="relative z-10">
+            {children}
+          </div>
+        </div>
         {/* Global grid overlay — visible across all pages */}
         <div
           aria-hidden="true"

@@ -272,7 +272,7 @@ export function ArchitecturePage() {
   };
 
   return (
-    <div className="bg-base-black min-h-screen">
+    <div className="min-h-screen">
       {/* Top nav bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-base-black border-b-[3px] border-accent-yellow">
         <div className="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between">
@@ -344,7 +344,7 @@ export function ArchitecturePage() {
 
       {/* Footer */}
       <div className="h-[3px] bg-accent-yellow" />
-      <footer className="bg-base-black px-6 py-12">
+      <footer className="px-6 py-12">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-start justify-between gap-6">
           <div>
             <Image src="/logo.png" alt="Molebie AI" width={160} height={40} className="h-20 w-auto" />

@@ -68,7 +68,7 @@ function Connector() {
 export function Architecture() {
   return (
     <section
-      className="bg-base-black min-h-screen flex items-center py-24 lg:py-32"
+      className="min-h-screen flex items-center py-24 lg:py-32"
       aria-label="Architecture"
     >
       <div className="max-w-5xl mx-auto px-6 w-full">
