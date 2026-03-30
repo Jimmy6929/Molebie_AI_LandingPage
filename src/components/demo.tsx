@@ -21,7 +21,7 @@ export function Demo() {
         {/* CLI install demo — main video */}
         <AnimateIn delay={0.1}>
           <DemoVideo
-            src={`${VIDEO_BASE}/cli-install-demo.mov`}
+            src={`${VIDEO_BASE}/cli-install-demo.mp4`}
             width={1280}
             height={720}
             caption="CLI tool — one-command install process"
@@ -45,7 +45,7 @@ export function Demo() {
                   </div>
                 </div>
                 <DemoVideo
-                  src={`${VIDEO_BASE}/instant-demo.mov`}
+                  src={`${VIDEO_BASE}/instant-demo.mp4`}
                   width={640}
                   height={360}
                   caption="Instant mode — sub-second responses"
@@ -61,7 +61,7 @@ export function Demo() {
                   </div>
                 </div>
                 <DemoVideo
-                  src={`${VIDEO_BASE}/thinking-demo.mov`}
+                  src={`${VIDEO_BASE}/thinking-demo.mp4`}
                   width={640}
                   height={360}
                   caption="Thinking mode — 2048 token budget"
@@ -77,7 +77,7 @@ export function Demo() {
                   </div>
                 </div>
                 <DemoVideo
-                  src={`${VIDEO_BASE}/think-harder-demo.mov`}
+                  src={`${VIDEO_BASE}/think-harder-demo.mp4`}
                   width={640}
                   height={360}
                   caption="Think harder — 8192 token budget"
@@ -107,7 +107,7 @@ export function Demo() {
                   </h3>
                 </div>
                 <DemoVideo
-                  src={`${VIDEO_BASE}/voice-demo.mov`}
+                  src={`${VIDEO_BASE}/voice-demo.mp4`}
                   width={640}
                   height={360}
                   caption="Wake word, speech-to-text, natural TTS response"
@@ -126,7 +126,7 @@ export function Demo() {
                   </h3>
                 </div>
                 <DemoVideo
-                  src={`${VIDEO_BASE}/web-search-demo.mov`}
+                  src={`${VIDEO_BASE}/web-search-demo.mp4`}
                   width={640}
                   height={360}
                   caption="Real-time search with source citations"
