@@ -16,7 +16,7 @@ export function Demo() {
         {/* CLI install demo — main video */}
         <AnimateIn delay={0.1}>
           <DemoVideo
-            src="/videos/cli-install-demo.mov"
+            src="https://github.com/Jimmy6929/Molebie_AI_LandingPage/releases/download/v1.0-assets/cli-install-demo.mov"
             width={1280}
             height={720}
             caption="CLI tool — one-command install process"
@@ -40,7 +40,7 @@ export function Demo() {
                   </div>
                 </div>
                 <DemoVideo
-                  src="/videos/instant-demo.mov"
+                  src="https://github.com/Jimmy6929/Molebie_AI_LandingPage/releases/download/v1.0-assets/instant-demo.mov"
                   width={640}
                   height={360}
                   caption="Instant mode — sub-second responses"
@@ -56,7 +56,7 @@ export function Demo() {
                   </div>
                 </div>
                 <DemoVideo
-                  src="/videos/thinking-demo.mov"
+                  src="https://github.com/Jimmy6929/Molebie_AI_LandingPage/releases/download/v1.0-assets/thinking-demo.mov"
                   width={640}
                   height={360}
                   caption="Thinking mode — 2048 token budget"
@@ -72,7 +72,7 @@ export function Demo() {
                   </div>
                 </div>
                 <DemoVideo
-                  src="/videos/think-harder-demo.mov"
+                  src="https://github.com/Jimmy6929/Molebie_AI_LandingPage/releases/download/v1.0-assets/think-harder-demo.mov"
                   width={640}
                   height={360}
                   caption="Think harder — 8192 token budget"
@@ -102,7 +102,7 @@ export function Demo() {
                   </h3>
                 </div>
                 <DemoVideo
-                  src="/videos/voice-demo.mov"
+                  src="https://github.com/Jimmy6929/Molebie_AI_LandingPage/releases/download/v1.0-assets/voice-demo.mov"
                   width={640}
                   height={360}
                   caption="Wake word, speech-to-text, natural TTS response"
@@ -121,7 +121,7 @@ export function Demo() {
                   </h3>
                 </div>
                 <DemoVideo
-                  src="/videos/web-search-demo.mov"
+                  src="https://github.com/Jimmy6929/Molebie_AI_LandingPage/releases/download/v1.0-assets/web-search-demo.mov"
                   width={640}
                   height={360}
                   caption="Real-time search with source citations"
