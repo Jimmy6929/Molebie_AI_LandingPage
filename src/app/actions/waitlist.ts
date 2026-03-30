@@ -1,13 +1,26 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
-
 export type WaitlistResult = {
   success: boolean;
   message: string;
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const INSERT_WAITLIST = `
+  mutation InsertWaitlist($email: String!, $source: String!) {
+    insert_waitlist_one(object: { email: $email, source: $source }) {
+      id
+    }
+  }
+`;
+
+function getGraphqlUrl() {
+  const subdomain = process.env.NEXT_PUBLIC_NHOST_SUBDOMAIN;
+  const region = process.env.NEXT_PUBLIC_NHOST_REGION;
+  if (!subdomain || !region) return null;
+  return `https://${subdomain}.graphql.${region}.nhost.run/v1`;
+}
 
 export async function joinWaitlist(
   _prev: WaitlistResult,
@@ -20,20 +33,45 @@ export async function joinWaitlist(
     return { success: false, message: "Please enter a valid email address." };
   }
 
-  if (!supabase) {
+  const graphqlUrl = getGraphqlUrl();
+  const adminSecret = process.env.NHOST_HASURA_ADMIN_SECRET;
+
+  if (!graphqlUrl || !adminSecret) {
     return { success: false, message: "Waitlist is not configured yet. Please try again later." };
   }
 
-  const { error } = await supabase
-    .from("waitlist")
-    .insert({ email, source });
+  try {
+    const res = await fetch(graphqlUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-hasura-admin-secret": adminSecret,
+      },
+      body: JSON.stringify({
+        query: INSERT_WAITLIST,
+        variables: { email, source },
+      }),
+    });
 
-  if (error) {
-    if (error.code === "23505") {
-      return { success: true, message: "You're already on the list!" };
+    if (!res.ok) {
+      console.error("[waitlist] HTTP error:", res.status, await res.text());
+      return { success: false, message: "Something went wrong. Please try again." };
     }
+
+    const json = await res.json();
+
+    if (json.errors?.length) {
+      const msg = json.errors[0].message ?? "";
+      console.error("[waitlist] GraphQL error:", msg);
+      if (msg.includes("uniqueness violation") || msg.includes("duplicate")) {
+        return { success: true, message: "You're already on the list!" };
+      }
+      return { success: false, message: "Something went wrong. Please try again." };
+    }
+
+    return { success: true, message: "You're on the list!" };
+  } catch (err) {
+    console.error("[waitlist] Unexpected error:", err);
     return { success: false, message: "Something went wrong. Please try again." };
   }
-
-  return { success: true, message: "You're on the list!" };
 }
