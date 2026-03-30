@@ -85,6 +85,7 @@ function ExpandedPlayer({
           src={src}
           className="max-w-full max-h-full"
           playsInline
+          muted
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
           onTimeUpdate={() => {
@@ -227,7 +228,6 @@ export function DemoVideo({
           ) : loopOnly ? (
             <video
               ref={videoRef}
-              src={visible ? src : undefined}
               poster={poster}
               width={width}
               height={height}
@@ -236,7 +236,9 @@ export function DemoVideo({
               playsInline
               preload="none"
               className="w-full h-auto block"
-            />
+            >
+              {visible && src && <source src={src} type="video/mp4" />}
+            </video>
           ) : (
             <div
               className="relative cursor-pointer group"
@@ -244,7 +246,6 @@ export function DemoVideo({
             >
               <video
                 ref={videoRef}
-                src={visible ? src : undefined}
                 poster={poster}
                 width={width}
                 height={height}
@@ -253,7 +254,9 @@ export function DemoVideo({
                 playsInline
                 preload="none"
                 className="w-full h-auto block"
-              />
+              >
+                {visible && src && <source src={src} type="video/mp4" />}
+              </video>
 
               {/* Click to expand hint */}
               <div className="absolute inset-0 bg-base-black/0 group-hover:bg-base-black/30 transition-colors flex items-center justify-center">

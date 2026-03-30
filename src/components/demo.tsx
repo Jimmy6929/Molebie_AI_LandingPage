@@ -2,11 +2,6 @@ import { SectionHeading } from "./ui/section-heading";
 import { AnimateIn } from "./ui/animate-in";
 import { DemoVideo } from "./ui/demo-video";
 
-const VIDEO_BASE =
-  process.env.NODE_ENV === "production"
-    ? "https://github.com/Jimmy6929/Molebie_AI_LandingPage/releases/download/v1.0-assets"
-    : "/videos";
-
 export function Demo() {
   return (
     <section
@@ -21,7 +16,7 @@ export function Demo() {
         {/* CLI install demo — main video */}
         <AnimateIn delay={0.1}>
           <DemoVideo
-            src={`${VIDEO_BASE}/cli-install-demo.mp4`}
+            src={`/videos/cli-install-demo.mp4`}
             width={1280}
             height={720}
             caption="CLI tool — one-command install process"
@@ -45,7 +40,7 @@ export function Demo() {
                   </div>
                 </div>
                 <DemoVideo
-                  src={`${VIDEO_BASE}/instant-demo.mp4`}
+                  src={`/videos/instant-demo.mp4`}
                   width={640}
                   height={360}
                   caption="Instant mode — sub-second responses"
@@ -61,7 +56,7 @@ export function Demo() {
                   </div>
                 </div>
                 <DemoVideo
-                  src={`${VIDEO_BASE}/thinking-demo.mp4`}
+                  src={`/videos/thinking-demo.mp4`}
                   width={640}
                   height={360}
                   caption="Thinking mode — 2048 token budget"
@@ -77,7 +72,7 @@ export function Demo() {
                   </div>
                 </div>
                 <DemoVideo
-                  src={`${VIDEO_BASE}/think-harder-demo.mp4`}
+                  src={`/videos/think-harder-demo.mp4`}
                   width={640}
                   height={360}
                   caption="Think harder — 8192 token budget"
@@ -107,7 +102,7 @@ export function Demo() {
                   </h3>
                 </div>
                 <DemoVideo
-                  src={`${VIDEO_BASE}/voice-demo.mp4`}
+                  src={`/videos/voice-demo.mp4`}
                   width={640}
                   height={360}
                   caption="Wake word, speech-to-text, natural TTS response"
@@ -126,7 +121,7 @@ export function Demo() {
                   </h3>
                 </div>
                 <DemoVideo
-                  src={`${VIDEO_BASE}/web-search-demo.mp4`}
+                  src={`/videos/web-search-demo.mp4`}
                   width={640}
                   height={360}
                   caption="Real-time search with source citations"
