@@ -40,6 +40,12 @@ export function Nav() {
             Architecture
           </Link>
           <GitHubStarBadge />
+          <a
+            href="#waitlist"
+            className="hidden sm:block bg-accent-yellow text-base-black px-4 py-2 font-black uppercase tracking-widest text-xs hover:bg-bg-white transition-colors"
+          >
+            Join Waitlist
+          </a>
         </div>
       </div>
     </nav>

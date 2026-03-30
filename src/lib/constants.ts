@@ -78,3 +78,71 @@ export const REQUIREMENTS = [
 ] as const;
 
 export const BACKENDS = ["MLX", "Ollama", "vLLM", "llama.cpp", "OpenAI API"] as const;
+
+export const DEMO_FEATURES = [
+  {
+    title: "Voice Conversation",
+    description: "Wake word, speech-to-text, natural TTS response",
+    icon: "microphone" as const,
+  },
+  {
+    title: "Document Memory",
+    description: "Upload and query your documents with hybrid search",
+    icon: "document" as const,
+  },
+  {
+    title: "Web Search",
+    description: "Real-time search with source citations",
+    icon: "globe" as const,
+  },
+] as const;
+
+export const COMPARISONS = [
+  { aspect: "Data Privacy", cloud: "Your data on their servers", self: "Everything stays on your machine" },
+  { aspect: "Monthly Cost", cloud: "$20\u2013100+/month per user", self: "Free forever, you own the hardware" },
+  { aspect: "Offline Access", cloud: "Requires internet connection", self: "Works completely offline" },
+  { aspect: "Customization", cloud: "Limited to what they offer", self: "Full control over models and config" },
+  { aspect: "Vendor Lock-in", cloud: "Switching costs and data export pain", self: "Open source, standard formats" },
+  { aspect: "Compliance", cloud: "Trust their compliance claims", self: "Verify yourself \u2014 it\u2019s your infra" },
+] as const;
+
+export const TRUST_BADGES = [
+  { label: "Zero Telemetry", icon: "shield" as const },
+  { label: "100% Offline Capable", icon: "offline" as const },
+  { label: "MIT Licensed", icon: "license" as const },
+  { label: "SQLite \u2014 Your Data", icon: "database" as const },
+  { label: "No Cloud Dependencies", icon: "cloud-off" as const },
+] as const;
+
+export const FAQ_ITEMS = [
+  {
+    question: "What hardware do I need to run Molebie AI?",
+    answer:
+      "Minimum 8 GB RAM with any modern CPU. For best performance, 16 GB+ RAM with Apple Silicon or an NVIDIA GPU is recommended. The installer auto-detects your hardware and picks optimal models.",
+  },
+  {
+    question: "Is Molebie AI truly private?",
+    answer:
+      "Yes. All data is stored locally in SQLite on your machine. There is no telemetry, no cloud sync, and no external API calls unless you explicitly configure an external LLM provider.",
+  },
+  {
+    question: "Can multiple users share one installation?",
+    answer:
+      "Yes. Molebie AI supports multi-user with full data isolation. Each user gets their own conversation history, documents, and settings.",
+  },
+  {
+    question: "What LLM models are supported?",
+    answer:
+      "Molebie AI supports multiple backends: MLX (Apple Silicon), Ollama, vLLM, llama.cpp, and OpenAI-compatible APIs. You can switch models at any time.",
+  },
+  {
+    question: "How do I update Molebie AI?",
+    answer:
+      "Run the same install command again. It detects the existing installation and performs an in-place upgrade while preserving your data and configuration.",
+  },
+  {
+    question: "Is Docker required?",
+    answer:
+      "Docker is optional and only needed for web search (SearXNG) and text-to-speech (Kokoro TTS). The core AI assistant runs natively without Docker.",
+  },
+] as const;
