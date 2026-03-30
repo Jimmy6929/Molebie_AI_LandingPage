@@ -40,12 +40,6 @@ export function Nav() {
             Architecture
           </Link>
           <GitHubStarBadge />
-          <a
-            href="#updates"
-            className="hidden sm:flex items-center bg-accent-yellow text-base-black px-4 py-2 border-2 border-accent-yellow font-bold text-sm hover:bg-bg-white hover:border-bg-white transition-colors"
-          >
-            Get Updates
-          </a>
         </div>
       </div>
     </nav>
