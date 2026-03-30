@@ -36,7 +36,7 @@ export function OsTabs({ inverted = false }: { inverted?: boolean }) {
       <div className="flex gap-[3px] mb-[3px]">
         <button
           onClick={() => setActiveTab("unix")}
-          className={`px-6 py-3 text-sm font-bold uppercase tracking-widest transition-colors ${
+          className={`px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-widest transition-colors ${
             activeTab === "unix" ? activeClass : inactiveClass
           }`}
         >
@@ -44,15 +44,15 @@ export function OsTabs({ inverted = false }: { inverted?: boolean }) {
         </button>
         <button
           onClick={() => setActiveTab("windows")}
-          className={`px-6 py-3 text-sm font-bold uppercase tracking-widest transition-colors ${
+          className={`px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-widest transition-colors ${
             activeTab === "windows" ? activeClass : inactiveClass
           }`}
         >
           Windows (WSL2)
         </button>
       </div>
-      <div className="flex items-center gap-2 border-2 border-base-black bg-base-black p-4">
-        <code className="font-mono text-sm md:text-base text-accent-yellow break-all flex-1 mr-2">
+      <div className="flex items-center gap-2 border-2 border-base-black bg-base-black p-3 sm:p-4">
+        <code className="font-mono text-xs sm:text-sm md:text-base text-accent-yellow break-all flex-1 mr-2">
           {command}
         </code>
         <CopyButton text={command} />

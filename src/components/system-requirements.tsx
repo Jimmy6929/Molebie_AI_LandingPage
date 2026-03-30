@@ -8,7 +8,7 @@ export function SystemRequirements() {
       className="bg-accent-yellow min-h-screen flex items-center py-24 lg:py-32"
       aria-label="System requirements"
     >
-      <div className="max-w-7xl mx-auto px-6 w-full">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 w-full">
         <AnimateIn>
           <SectionHeading light>System Requirements</SectionHeading>
         </AnimateIn>

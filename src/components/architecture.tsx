@@ -71,7 +71,7 @@ export function Architecture() {
       className="min-h-screen flex items-center py-24 lg:py-32"
       aria-label="Architecture"
     >
-      <div className="max-w-5xl mx-auto px-6 w-full">
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 w-full">
         <AnimateIn>
           <SectionHeading>Architecture</SectionHeading>
         </AnimateIn>

@@ -14,10 +14,10 @@ export function Hero() {
       aria-label="Hero"
     >
       {/* Content — above global geometric background */}
-      <div className="relative max-w-7xl mx-auto px-4 lg:px-6 w-full py-28 lg:py-20 z-10">
+      <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 w-full py-20 sm:py-28 lg:py-20 z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
           <motion.div
-            className="lg:col-span-6 xl:col-span-5 bg-accent-yellow p-6 md:p-10 lg:p-12"
+            className="lg:col-span-6 xl:col-span-5 bg-accent-yellow p-4 sm:p-6 md:p-10 lg:p-12"
             initial={animate ? { opacity: 0, x: -30 } : undefined}
             animate={animate ? { opacity: 1, x: 0 } : undefined}
             transition={{

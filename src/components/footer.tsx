@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer aria-label="Footer">
       <div className="h-[3px] bg-accent-yellow" />
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Logo & tagline */}
           <div>
@@ -15,7 +15,7 @@ export function Footer() {
               alt="Molebie AI"
               width={160}
               height={40}
-              className="h-20 w-auto"
+              className="h-12 sm:h-20 w-auto"
             />
             <p className="text-bg-white/60 text-sm mt-1">
               Built for privacy-conscious developers who want to own their data.

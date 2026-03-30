@@ -6,7 +6,7 @@ import { AnimateIn } from "./ui/animate-in";
 export function Features() {
   return (
     <section id="features" className="min-h-screen flex items-center py-24 lg:py-32" aria-label="Features">
-      <div className="max-w-7xl mx-auto px-6 w-full">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 w-full">
         <AnimateIn>
           <SectionHeading>What You Get</SectionHeading>
         </AnimateIn>

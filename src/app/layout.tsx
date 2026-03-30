@@ -70,6 +70,18 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
         <div className="relative">
+          {/* Global grid overlay — scrolls with page */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-[9999]"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(255,204,0,0.07) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,204,0,0.07) 1px, transparent 1px)
+              `,
+              backgroundSize: "80px 80px",
+            }}
+          />
           {/* Global geometric background — behind all content */}
           <GeometricBackground />
           {/* Page content — above shapes */}
@@ -77,18 +89,6 @@ export default function RootLayout({
             {children}
           </div>
         </div>
-        {/* Global grid overlay — visible across all pages */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-0 z-[9999]"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, rgba(255,204,0,0.07) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,204,0,0.07) 1px, transparent 1px)
-            `,
-            backgroundSize: "80px 80px",
-          }}
-        />
       </body>
     </html>
   );

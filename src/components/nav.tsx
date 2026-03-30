@@ -22,17 +22,17 @@ export function Nav() {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-14 sm:h-20 flex items-center justify-between">
         <a href="#" className="flex-shrink-0">
           <Image
             src="/logo.png"
             alt="Molebie AI"
             width={160}
             height={40}
-            className="h-20 w-auto"
+            className="h-10 sm:h-14 lg:h-20 w-auto"
           />
         </a>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <Link
             href="/architecture"
             className="hidden sm:block text-sm font-bold uppercase tracking-wider text-bg-white/60 hover:text-accent-yellow transition-colors"
