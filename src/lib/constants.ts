@@ -1,7 +1,7 @@
 export const GITHUB_REPO = "https://github.com/Jimmy6929/Molebie_AI";
 export const GITHUB_API_REPO = "https://api.github.com/repos/Jimmy6929/Molebie_AI";
-export const INSTALL_COMMAND_UNIX = "curl -fsSL https://molebie.ai/install.sh | bash";
-export const INSTALL_COMMAND_WINDOWS = 'wsl -e bash -c "curl -fsSL https://molebie.ai/install.sh | bash"';
+export const INSTALL_COMMAND_UNIX = "curl -fsSL https://molebieai.com/install.sh | bash";
+export const INSTALL_COMMAND_WINDOWS = 'wsl -e bash -c "curl -fsSL https://molebieai.com/install.sh | bash"';
 
 export const FEATURES = [
   {
@@ -53,7 +53,7 @@ export const STEPS = [
     number: "01",
     title: "Install",
     description: "One command pulls the repo and sets up everything.",
-    code: "curl -fsSL https://molebie.ai/install.sh | bash",
+    code: "curl -fsSL https://molebieai.com/install.sh | bash",
   },
   {
     number: "02",

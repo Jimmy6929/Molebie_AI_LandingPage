@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: "Molebie AI",
     description:
       "Self-hosted AI assistant with voice conversation, vision, document memory, and web search.",
-    url: "https://molebie.ai",
+    url: "https://molebieai.com",
     siteName: "Molebie AI",
     type: "website",
   },
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "Molebie AI — Self-Hosted AI Assistant",
     description: "Private AI with voice, vision, RAG, and web search.",
   },
-  metadataBase: new URL("https://molebie.ai"),
+  metadataBase: new URL("https://molebieai.com"),
   robots: "index, follow",
 };
 
@@ -53,7 +53,7 @@ export default function RootLayout({
               name: "Molebie AI",
               description:
                 "Self-hosted AI assistant with voice, vision, RAG, and web search",
-              url: "https://molebie.ai",
+              url: "https://molebieai.com",
               applicationCategory: "DeveloperApplication",
               operatingSystem: "macOS, Linux, Windows (WSL2)",
               license: "https://opensource.org/licenses/MIT",

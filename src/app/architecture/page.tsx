@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     title: "Molebie AI — Architecture",
     description:
       "13 detailed architecture diagrams covering every layer of the self-hosted AI assistant.",
-    url: "https://molebie.ai/architecture",
+    url: "https://molebieai.com/architecture",
     siteName: "Molebie AI",
     type: "website",
   },

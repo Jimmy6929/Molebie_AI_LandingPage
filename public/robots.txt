@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://molebie.ai/sitemap.xml
+Sitemap: https://molebieai.com/sitemap.xml
