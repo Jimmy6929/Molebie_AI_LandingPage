@@ -174,6 +174,11 @@ export function DemoVideo({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [visible, setVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [needsTap, setNeedsTap] = useState(false);
+
+  // Derive poster path from src if not provided (e.g. /videos/foo.mp4 -> /videos/foo-poster.jpg)
+  const derivedPoster =
+    poster || (src ? src.replace(/\.mp4$/, "-poster.jpg") : undefined);
 
   // Lazy load on scroll
   useEffect(() => {
@@ -192,12 +197,33 @@ export function DemoVideo({
     return () => observer.disconnect();
   }, []);
 
-  // Autoplay muted when visible
+  // Autoplay muted when visible — wait for video data to be ready
   useEffect(() => {
-    if (visible && videoRef.current) {
-      videoRef.current.play().catch(() => {});
+    const video = videoRef.current;
+    if (!visible || !video) return;
+
+    const attemptPlay = () => {
+      video.play().catch((err) => {
+        if (err.name === "NotAllowedError" || err.name === "AbortError") {
+          setNeedsTap(true);
+        }
+      });
+    };
+
+    if (video.readyState >= 2) {
+      attemptPlay();
+    } else {
+      video.addEventListener("loadeddata", attemptPlay, { once: true });
+      return () => video.removeEventListener("loadeddata", attemptPlay);
     }
   }, [visible]);
+
+  const handleTapToPlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().catch(() => {});
+    setNeedsTap(false);
+  };
 
   const aspectRatio = `${width} / ${height}`;
 
@@ -226,52 +252,82 @@ export function DemoVideo({
               </div>
             </div>
           ) : loopOnly ? (
-            <video
-              ref={videoRef}
-              poster={poster}
-              width={width}
-              height={height}
-              muted
-              loop
-              playsInline
-              preload="none"
-              className="w-full h-auto block"
-            >
-              {visible && src && <source src={src} type="video/mp4" />}
-            </video>
-          ) : (
-            <div
-              className="relative cursor-pointer group"
-              onClick={() => setExpanded(true)}
-            >
+            <div className="relative">
               <video
                 ref={videoRef}
-                poster={poster}
+                src={visible ? src : undefined}
+                poster={derivedPoster}
                 width={width}
                 height={height}
+                autoPlay
                 muted
                 loop
                 playsInline
-                preload="none"
+                preload="metadata"
                 className="w-full h-auto block"
-              >
-                {visible && src && <source src={src} type="video/mp4" />}
-              </video>
+              />
+              {needsTap && (
+                <button
+                  onClick={handleTapToPlay}
+                  className="absolute inset-0 flex items-center justify-center bg-base-black/40"
+                  aria-label="Tap to play"
+                >
+                  <div className="w-16 h-16 bg-accent-yellow flex items-center justify-center">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#0A0A0A">
+                      <polygon points="8,5 19,12 8,19" />
+                    </svg>
+                  </div>
+                </button>
+              )}
+            </div>
+          ) : (
+            <div
+              className="relative cursor-pointer group"
+              onClick={() => {
+                if (needsTap) {
+                  handleTapToPlay();
+                } else {
+                  setExpanded(true);
+                }
+              }}
+            >
+              <video
+                ref={videoRef}
+                src={visible ? src : undefined}
+                poster={derivedPoster}
+                width={width}
+                height={height}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="w-full h-auto block"
+              />
 
-              {/* Click to expand hint */}
-              <div className="absolute inset-0 bg-base-black/0 group-hover:bg-base-black/30 transition-colors flex items-center justify-center">
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-accent-yellow px-4 py-2 flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="2.5">
-                    <polyline points="15 3 21 3 21 9" />
-                    <polyline points="9 21 3 21 3 15" />
-                    <line x1="21" y1="3" x2="14" y2="10" />
-                    <line x1="3" y1="21" x2="10" y2="14" />
-                  </svg>
-                  <span className="text-base-black font-bold text-xs uppercase tracking-widest">
-                    Click to expand
-                  </span>
+              {needsTap ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-base-black/40">
+                  <div className="w-16 h-16 bg-accent-yellow flex items-center justify-center">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#0A0A0A">
+                      <polygon points="8,5 19,12 8,19" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="absolute inset-0 bg-base-black/0 group-hover:bg-base-black/30 transition-colors flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-accent-yellow px-4 py-2 flex items-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="2.5">
+                      <polyline points="15 3 21 3 21 9" />
+                      <polyline points="9 21 3 21 3 15" />
+                      <line x1="21" y1="3" x2="14" y2="10" />
+                      <line x1="3" y1="21" x2="10" y2="14" />
+                    </svg>
+                    <span className="text-base-black font-bold text-xs uppercase tracking-widest">
+                      Click to expand
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
