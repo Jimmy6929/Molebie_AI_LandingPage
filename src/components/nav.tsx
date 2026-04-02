@@ -33,9 +33,17 @@ export function Nav() {
           />
         </a>
         <div className="flex items-center gap-2 sm:gap-4">
+          <a
+            href="https://toogoodtobechu.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:block text-sm font-bold uppercase tracking-wider text-bg-white hover:text-accent-yellow transition-colors"
+          >
+            The Founder
+          </a>
           <Link
             href="/architecture"
-            className="hidden sm:block text-sm font-bold uppercase tracking-wider text-bg-white/60 hover:text-accent-yellow transition-colors"
+            className="hidden sm:block text-sm font-bold uppercase tracking-wider text-bg-white hover:text-accent-yellow transition-colors"
           >
             Architecture
           </Link>

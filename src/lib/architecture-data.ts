@@ -13,13 +13,13 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     number: "01",
     title: "High-Level Architecture",
     description:
-      "Bird's-eye view of how every component connects. Two physical machines connected via Tailscale VPN or LAN, with the gateway as the central orchestrator.",
+      "Bird's-eye view of how every component connects. Flexible deployment across one or more machines, with the gateway as the central orchestrator.",
     diagram: `graph TB
     subgraph browser [Browser]
         User["User (Browser)"]
     end
 
-    subgraph machine1 ["Machine 1 — Server"]
+    subgraph appServices ["App Services (Gateway + Webapp)"]
         WebApp["Next.js 16 Web App\\n:3000"]
         Gateway["FastAPI Gateway\\n:8000"]
         SQLiteDB["SQLite Database\\n(sqlite-vec + FTS5)\\ndata/molebie.db"]
@@ -30,7 +30,7 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
         end
     end
 
-    subgraph machine2 ["Machine 2 — GPU Node"]
+    subgraph llmServices ["LLM Server (GPU / Apple Silicon)"]
         ThinkingLLM["Inference — Thinking Tier\\n(MLX / Ollama / vLLM / OpenAI)\\n:8080"]
         InstantLLM["Inference — Instant Tier\\n(MLX / Ollama / vLLM / OpenAI)\\n:8081"]
     end
@@ -44,12 +44,14 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     Gateway -->|"HTTP :8888"| SearXNG
     Gateway -->|"HTTP :8880"| KokoroTTS`,
     details: [
-      "Two physical machines connected via Tailscale VPN or LAN (also supports single-machine deployment)",
-      "Machine 1 runs the web app, gateway, SQLite database, SearXNG, and Kokoro TTS",
-      "Machine 2 runs GPU inference servers (supports MLX, Ollama, vLLM, llama.cpp, or OpenAI-compatible APIs)",
+      "Flexible deployment: services can all run on one machine or be distributed freely across machines",
+      "3 core services: Webapp (Next.js), Gateway (FastAPI + SQLite), LLM Server (MLX/Ollama/vLLM)",
+      "Optional Docker services (SearXNG, Kokoro TTS) are co-located with Gateway",
       "No Supabase dependency — all data stored locally in SQLite with sqlite-vec for vector search and FTS5 for full-text search",
       "All inter-service communication is HTTP; no message queues or gRPC",
       "Gateway is the central orchestrator — routes to inference, RAG, web search, TTS, memory, summarization, and database",
+      "molebie-ai CLI manages setup, configuration, and service lifecycle",
+      "Docker is only required for optional services (SearXNG, Kokoro TTS)",
     ],
   },
   {
@@ -70,29 +72,32 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
 
     U->>W: Type message, click Send
     W->>W: Get JWT from localStorage
-    W->>G: POST /chat/stream {message, mode, session_id, images[]}
+    W->>G: POST /chat/stream {message, mode, session_id, images[]}<br/>Authorization: Bearer JWT
 
     G->>G: Decode JWT, extract user_id
     G->>DB: GET or CREATE chat_session
     DB-->>G: session_id
 
-    G->>DB: INSERT chat_message (role=user)
+    G->>DB: INSERT chat_message (role=user) + store images
     G->>DB: SELECT last messages for context
 
     par Context Enrichment
-        G->>S: Intent classification then search if needed
+        G->>S: Intent classification → search if needed
         S-->>G: Web results + snippets
     and
-        G->>RAG: Hybrid search (sqlite-vec + FTS5 then RRF then rerank)
+        G->>RAG: Hybrid search (sqlite-vec + FTS5 → RRF → rerank)
         RAG-->>G: Relevant document chunks
     and
         G->>MEM: Retrieve relevant user memories
         MEM-->>G: Top 5 memories (by similarity)
+    and
+        G->>DB: GET session_documents (attached files)
+        DB-->>G: Document content
     end
 
-    G->>G: Build system prompt with evidence summary
+    G->>G: Build system prompt with evidence summary<br/>(web sources + RAG chunks + memories + attached docs)
 
-    G->>LLM: POST /v1/chat/completions (stream:true)
+    G->>LLM: POST /v1/chat/completions<br/>{model, messages[], stream:true,<br/>enable_thinking, thinking_budget, images[]}
 
     loop SSE Streaming
         LLM-->>G: data: {delta.content, delta.reasoning_content}
@@ -101,7 +106,8 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     end
 
     LLM-->>G: data: [DONE]
-    G->>DB: INSERT chat_message (role=assistant)
+    G->>G: Strip think tags, extract reasoning_content
+    G->>DB: INSERT chat_message (role=assistant,<br/>content, reasoning_content, mode_used)
 
     par Background Tasks
         G->>MEM: Extract memories (every 6 messages)
@@ -110,6 +116,7 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     end
 
     G-->>W: data: [DONE]
+    W->>W: Parse think tags, show reasoning toggle
     W-->>U: Final rendered response with source citations`,
     details: [
       "Parallel context enrichment: web search, RAG retrieval, and memory recall happen simultaneously",
@@ -151,16 +158,19 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
 
     U->>W: Navigate to /chat
     W->>W: Read JWT from localStorage
-    W->>G: GET /chat/sessions (Authorization: Bearer JWT)
-    G->>G: Decode JWT (HS256) Extract user_id
+    W->>G: GET /chat/sessions<br/>Authorization: Bearer JWT
+    G->>G: Decode JWT (HS256)<br/>Extract sub (user_id), email
+    G->>G: Attach user_id to request context
     G-->>W: 200 OK + session list`,
     details: [
-      "Gateway-managed auth — no external auth provider",
+      "Gateway-managed auth — no external auth provider (Supabase removed)",
       "JWTs signed with HS256 using a configurable secret",
-      "Single-user mode: password-only login, default user ID",
+      "Gateway decodes JWT locally (no external round-trip)",
+      "Single-user mode: password-only login, default user ID 00000000-0000-0000-0000-000000000001",
       "Multi-user mode: email + password registration and login",
       "Token expiry: 7 days, 401 triggers automatic logout + redirect",
       "All database queries filter by user_id for data isolation",
+      "User registration via POST /auth/register (multi-user mode only)",
     ],
   },
   {
@@ -270,7 +280,9 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
       "Cross-encoder reranking for final relevance scoring (ms-marco-MiniLM-L6-v2)",
       "Contextual retrieval: LLM generates context prefixes for each chunk (+35-49% retrieval quality)",
       "LLM query rewriting to improve retrieval",
-      "Embedding model: configurable (default: all-MiniLM-L6-v2, 384-dim)",
+      "Session document attachments: files can be attached to specific sessions and injected directly into the system prompt",
+      "Embedding model: configurable (default: Orange/orange-nomic-v1.5-1536, 1536-dim)",
+      "RAG metrics: performance logging with quality tracking via rag_query_metrics table",
       "Match count: 20 candidates, threshold: 0.3, max context: 12000 chars",
     ],
   },
@@ -279,7 +291,7 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     number: "07",
     title: "Voice Pipeline",
     description:
-      "Full voice conversation with wake-word detection, speech-to-text via Whisper, speaker verification, and streaming text-to-speech via Kokoro.",
+      "Full voice conversation with speech-to-text via Whisper and streaming text-to-speech via Kokoro. Two voice modes: STT-only and Chat mode with auto-send.",
     diagram: `sequenceDiagram
     participant U as Browser
     participant W as Next.js :3000
@@ -289,13 +301,12 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     participant LLM as Inference Tier
 
     Note over U,W: Voice Conversation Mode
-    U->>W: Hold mic / wake-word detected
-    W->>W: Record audio (Web Audio API) + silence detection
+    U->>W: Press mic button (STT or Chat mode)
+    W->>W: Record audio (Web Audio API)<br/>+ silence detection (auto-stop)
     W->>G: POST /chat/transcribe (audio file)
     G->>STT: Transcribe audio
-    G->>G: Speaker verification (if enrolled)
     STT-->>G: Transcribed text
-    G-->>W: {text, speaker_verified, speaker_confidence}
+    G-->>W: {text}
 
     W->>G: POST /chat/stream {message: transcribed text}
     G->>LLM: Generate response (streaming)
@@ -306,15 +317,17 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     G->>TTS: Synthesize speech
     TTS-->>G: Audio (WAV)
     G-->>W: Audio response
-    W->>U: Play audio response (streaming TTS)
+    W->>U: Play audio response<br/>(streaming TTS — sentences play as they arrive)
     W->>W: Auto-restart microphone for next turn`,
     details: [
-      "STT: faster-whisper (local Whisper inference, 'tiny' model ~75MB, CTranslate2 backend)",
+      "STT: faster-whisper (local Whisper inference, 'tiny' model ~75MB, CTranslate2 backend) via POST /chat/transcribe",
       "TTS: Kokoro FastAPI (Docker, CPU) with 12 voice options (British/American, male/female)",
-      "Speaker verification: MFCC-based voice embeddings, 3-sample enrollment, similarity threshold 0.82",
-      "Wake-word detection: browser-side voice activity detection ('Hey Chat', 'Hello Chat', 'Hi Chat')",
+      "Two voice modes: STT-only mode (transcribe without auto-send) and Chat mode (auto-send + streaming TTS response)",
+      "Silence detection: audio threshold-based auto-stop recording",
+      "Stop commands: 'stop', 'goodbye', 'bye', 'that's all', etc.",
       "Streaming TTS: sentences play as the LLM generates them (continuous audio)",
       "Voice settings: configurable voice, speed (0.5x-2.0x), auto-read toggle",
+      "Speaker verification (optional): MFCC-based voice embeddings, 3-sample enrollment via /chat/voice-enroll",
     ],
   },
   {
@@ -413,17 +426,30 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     }
 
     rag_query_metrics {
-        integer id PK
-        text user_id
+        text id PK
+        text user_id FK
         text query_text
         integer num_candidates
         integer unique_documents
+        real top_similarity
         real avg_similarity
-        real max_similarity
-        real avg_rerank_score
-        real max_rerank_score
-        real search_time_ms
-        real rerank_time_ms
+        real top_rrf_score
+        real top_rerank_score
+        real score_spread
+        integer hybrid_enabled
+        integer reranker_enabled
+        real t_embed_ms
+        real t_search_ms
+        real t_rerank_ms
+        real t_total_ms
+        text created_at
+    }
+
+    message_sources {
+        text id PK
+        text message_id FK
+        text url
+        text title
         text created_at
     }
 
@@ -437,16 +463,21 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     users ||--o{ document_chunks : "owns"
     chat_sessions ||--o{ session_documents : "has attached"
     users ||--o{ session_documents : "owns"
-    users ||--o{ user_memories : "has memories"`,
+    users ||--o{ user_memories : "has memories"
+    chat_messages ||--o{ message_sources : "has sources"`,
     details: [
       "SQLite with WAL mode enabled for concurrent reads",
       "Foreign key constraints enforced for referential integrity",
-      "sqlite-vec virtual tables for vector similarity search",
-      "FTS5 virtual table for BM25 full-text search",
+      "User data isolation enforced at query level (every query filters by user_id)",
+      "sqlite-vec virtual tables (document_chunks_vec, user_memories_vec) for vector similarity search",
+      "FTS5 virtual table (document_chunks_fts) for BM25 full-text search",
+      "RRF hybrid search combining vector + BM25 results",
       "mode_used supports: instant, thinking, thinking_harder",
+      "message_sources stores web search source URLs/titles per assistant message",
       "user_memories stores cross-session facts with categories: preference, background, project, instruction",
-      "rag_query_metrics tracks RAG search performance for analytics",
-      "Schema auto-initialized on first gateway start",
+      "user_memories has access tracking (count + last_accessed_at) for relevance decay",
+      "rag_query_metrics tracks RAG search performance with detailed timing breakdown",
+      "Schema auto-initialized on first gateway start via init_database()",
     ],
   },
   {
@@ -468,6 +499,7 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
         H1["GET /"]
         H2["GET /auth"]
         H3["GET /inference"]
+        H4["GET /deep"]
     end
 
     subgraph chat ["/chat"]
@@ -477,24 +509,32 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
         C4["POST /sessions"]
         C5["GET /sessions/:id/messages"]
         C6["PATCH /sessions/:id"]
-        C7["DELETE /sessions/:id"]
-        C8["POST /transcribe (STT)"]
-        C9["POST /tts"]
-        C10["POST /voice-enroll"]
+        C7["PATCH /sessions/:id/pin"]
+        C8["DELETE /sessions/:id"]
+        C9["GET /image/:image_id"]
+        C10["GET /sessions/:id/images"]
+        C11["POST /transcribe (STT)"]
+        C12["POST /tts"]
+        C13["POST /voice-enroll"]
+        C14["GET /voice-profile"]
+        C15["DELETE /voice-profile"]
     end
 
     subgraph docs ["/documents"]
         D1["POST /upload"]
         D2["GET / (list)"]
         D3["DELETE /:id"]
-        D4["POST /sessions/:id/attach"]
-        D5["GET /sessions/:id/attachments"]
+        D4["POST /reindex"]
+        D5["POST /sessions/:id/attach"]
+        D6["GET /sessions/:id/attachments"]
+        D7["DELETE /sessions/:id/attachments/:id"]
+        D8["POST /evaluate"]
     end`,
     details: [
       "/auth — Authentication endpoints (login, register, mode detection)",
-      "/health — Health checks for gateway, auth validation, and inference status",
-      "/chat — Core chat operations: messaging, streaming, sessions, voice, TTS",
-      "/documents — Document upload, listing, deletion, and session attachment for RAG",
+      "/health — Health checks for gateway, auth validation, inference status, and deep diagnostics",
+      "/chat — Core chat operations: messaging, streaming, sessions, voice, TTS, images, voice profiles",
+      "/documents — Document upload, listing, deletion, reindexing, session attachment, and RAG evaluation",
       "All /chat and /documents routes require JWT Bearer token",
       "POST /chat/stream is the primary endpoint — returns SSE events",
     ],
@@ -504,19 +544,19 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     number: "10",
     title: "Deployment Topology",
     description:
-      "Physical deployment across one or two machines, connected via Tailscale VPN mesh or LAN. All IPs are configurable via the CLI wizard.",
+      "Flexible deployment across one or more machines. The CLI installer lets users choose how to distribute services. Machines connect via Tailscale VPN or LAN.",
     diagram: `graph LR
     subgraph tailnet [Tailscale VPN Mesh / LAN]
-        subgraph server ["Server Machine"]
+        subgraph server ["This Machine (App Server)"]
             next["Next.js :3000"]
             fastapi["FastAPI :8000"]
-            sqlite["SQLite DB\\ndata/molebie.db"]
+            sqlite["SQLite DB"]
             searx["SearXNG :8888"]
             kokoro["Kokoro TTS :8880"]
         end
-        subgraph gpu ["GPU Node"]
-            thinking["Thinking Tier :8080"]
-            instant["Instant Tier :8081"]
+        subgraph gpu ["Remote LLM Server"]
+            thinking["Thinking LLM :8080"]
+            instant["Instant LLM :8081"]
         end
     end
 
@@ -527,10 +567,13 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     fastapi ---|"Tailscale/LAN"| thinking
     fastapi ---|"Tailscale/LAN"| instant`,
     details: [
-      "Two-machine: Gateway/webapp on server, inference on GPU node (Tailscale/LAN)",
-      "Single-machine: Everything on localhost (configured via molebie-ai install)",
+      "All-in-one: Everything on localhost — the default, zero configuration",
+      "Frontend + API: Webapp + Gateway on this machine, LLM on a remote GPU machine",
+      "LLM server: This machine only runs inference — app + API run elsewhere",
+      "Custom: Any combination of services per machine (via CLI 'Custom' option)",
+      "Machines connect via Tailscale VPN or LAN — IPs configured during setup",
+      "Optional services (SearXNG, Kokoro TTS) always co-located with Gateway",
       "Auto-pull daemon: macOS LaunchAgent polls git and auto-updates on new commits",
-      "IPs are configurable via CLI wizard (no hardcoded Tailscale IPs)",
     ],
   },
   {
@@ -541,8 +584,8 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
       "Next.js 16 App Router with React 19. Dark glass UI theme with responsive mobile design, voice mode, document panel, and rich markdown rendering.",
     diagram: `flowchart TD
     Root["/ (root page.tsx)"]
-    Root -->|"authenticated?"| Chat["/chat — Main Chat UI"]
-    Root -->|"not authenticated"| Login["/login — Sign In / Sign Up"]
+    Root -->|"authenticated?"| Chat["/chat\\nMain Chat UI"]
+    Root -->|"not authenticated"| Login["/login\\nSign In / Sign Up"]
 
     Login --> AuthMode{"Auth mode?"}
     AuthMode -->|"single"| SingleAuth["Password-only login"]
@@ -551,21 +594,26 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     Chat --> Sidebar["Session Sidebar\\n(list, search, rename, pin, delete)"]
     Chat --> ChatArea["Chat Area\\n(messages, streaming, images)"]
     Chat --> ModeSelect["Mode Selector\\n(instant / thinking / thinking_harder)"]
-    Chat --> VoiceMode["Voice Conversation Mode\\n(STT + TTS + wake-word)"]
+    Chat --> VoiceMode["Voice Conversation Mode\\n(STT mode + Chat mode with streaming TTS)"]
     Chat --> DocPanel["Document Panel\\n(upload, attach, RAG brain)"]
 
     ChatArea --> Markdown["react-markdown\\n+ syntax highlighting\\n+ KaTeX math"]
     ChatArea --> ThinkBlock["Collapsible Reasoning\\n(think tag parser)"]
-    ChatArea --> Sources["Web Search Citations"]
-    ChatArea --> ImageView["Image Attachments"]
-    ChatArea --> Export["Export as Markdown"]`,
+    ChatArea --> Sources["Web Search Citations\\n(source links)"]
+    ChatArea --> ImageView["Image Attachments\\n(paste/drag-drop/upload)"]
+    ChatArea --> Export["Export as Markdown"]
+    ChatArea --> Regen["Regenerate Last Response"]`,
     details: [
-      "Frontend stack: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4",
-      "Voice conversation mode with wake-word detection and streaming TTS",
+      "Frontend stack: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, Geist Mono font, dark glass UI theme with green accents",
+      "Voice conversation mode with STT-only and Chat (auto-send + streaming TTS) modes",
       "Document upload/attachment for RAG and per-session context",
       "Image upload via paste, drag-and-drop, or file picker (stored locally)",
+      "Web search source citations with clickable links",
       "KaTeX math rendering and syntax-highlighted code blocks",
-      "Session pinning, search, export, and responsive mobile drawer sidebar",
+      "Session pinning/favoriting and search (when 5+ sessions)",
+      "Export conversations as Markdown",
+      "Regenerate last assistant response",
+      "Responsive mobile design with drawer sidebar",
     ],
   },
   {
@@ -583,24 +631,22 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
     Feature["molebie-ai feature list/add/remove"]
     Model["molebie-ai model download/remove/start/stop/list"]
 
-    Install --> Prereqs["Check prerequisites\\n(Docker, Node 18+, Python 3.10+, ffmpeg)"]
-    Prereqs --> Backend["Select backend\\n(MLX / Ollama / OpenAI-compatible)"]
-    Backend --> Models["Select model profile\\n(Light / Balanced / Custom)"]
-    Models --> Features["Toggle features\\n(voice, search, RAG)"]
-    Features --> Deploy["Select deployment\\n(single / two-machine)"]
-    Deploy --> Setup["Run setup\\n(env gen, model downloads, deps install)"]
-
-    Run --> Start["Start all configured services"]
-    Doctor --> Diagnose["Check environment health\\n(with --fix option)"]
+    Install --> Wizard["8-step interactive setup wizard"]
+    Run --> Start["Start locally-configured services\\n+ health-check remote services\\n(--service, --no-inference)"]
+    Doctor --> Diagnose["Check environment health\\n(--fix, --deep)"]
+    Status --> Show["Show config + service health"]
     Model --> ModelMgmt["Download/remove/start/stop LLM models"]`,
     details: [
       "Framework: Python + Typer + Rich",
-      "Config storage: .molebie/config.json (version 2)",
+      "Config storage: .molebie/config.json (version 3, auto-migrates from v2)",
+      "8-step install wizard: system check → deployment layout → inference backend → model profile → features → review → install → complete",
+      "Deployment presets: All-in-one, Frontend + API, LLM server, Custom",
       "Auto-generates .env.local from CLI config (including random JWT secret)",
-      "Prerequisite checker: detects and offers to install missing dependencies",
-      "Service manager: starts/stops all services via subprocess",
+      "Smart install: only installs dependencies for services running on this machine",
+      "Service manager: starts/stops only locally-configured services, health-checks remote ones",
+      "Feature management: enable/disable voice, search, RAG services",
       "Model management: download, remove, start, and stop LLM models per backend",
-      "Doctor: diagnose and optionally fix setup issues",
+      "Doctor: diagnose and optionally fix setup issues (--fix, --deep flags)",
     ],
   },
   {
@@ -640,16 +686,54 @@ export const ARCHITECTURE_SECTIONS: DiagramSection[] = [
       "Max 200 memories per user with access tracking for relevance decay",
     ],
   },
+  {
+    id: "install-wizard",
+    number: "14",
+    title: "Install Wizard — Full Flow",
+    description:
+      "The molebie-ai install command runs an 8-step interactive setup wizard. Step 2 determines which services run on this machine vs. remotely, adapting all subsequent steps.",
+    diagram: `flowchart TD
+    S1["Step 1: System Check\\nCheck RAM, disk, Apple Silicon"]
+    S2{"Step 2: Deployment Layout"}
+
+    S1 --> S2
+    S2 -->|"All-in-one"| P1["Everything local\\nNo follow-up questions"]
+    S2 -->|"Frontend + API"| P2["Gateway + Webapp here\\nAsk: LLM host? (1 Q)"]
+    S2 -->|"LLM Server"| P3["Inference only\\nNo follow-up questions"]
+    S2 -->|"Custom"| P4["Pick per service Y/n\\n+ host prompts for remotes"]
+
+    P1 --> Config["Config result:\\nrun_inference / run_gateway / run_webapp\\n+ remote host addresses"]
+    P2 --> Config
+    P3 --> Config
+    P4 --> Config
+
+    Config --> S3["Step 3: Inference Backend\\nMLX / Ollama / OpenAI-compatible\\n(auto-select if inference is remote)"]
+    S3 --> S4["Step 4: Model Profile\\nlight / balanced / custom\\n(skipped if OpenAI-compatible)"]
+    S4 --> S5["Step 5: Optional Features\\nSearch [Y/n] · RAG [Y/n] · Voice\\n(skipped if gateway is remote)"]
+    S5 --> S6["Step 6: Review\\nShow all settings in table\\nProceed? [Y/n]"]
+    S6 --> S7["Step 7: Installing\\nPrereqs → .env.local → Gateway deps\\n→ Webapp deps → Backend → Embedding → Features"]
+    S7 --> S8["Step 8: Complete\\nSummary table\\nStart Molebie AI now? [Y/n]"]`,
+    details: [
+      "Step 2 presets: All-in-one (everything local, no Qs), Frontend + API (ask LLM host), LLM Server (inference only), Custom (per-service Y/n)",
+      "Config result determines: run_inference, run_gateway, run_webapp (true/false) + remote host addresses",
+      "Step 3 auto-selects OpenAI-compatible if inference is remote; otherwise detects best local backend (MLX/Ollama)",
+      "Step 7 smart install: only installs dependencies for services running on this machine",
+      "Service dependency chain: Browser → Webapp (:3000) → Gateway (:8000) → LLM Server (:8080/:8081)",
+      "Gateway needs LLM Server address (if remote); Webapp needs Gateway address (if remote); LLM Server needs nothing",
+      "Config schema v3: setup_type, run_inference, run_gateway, run_webapp, inference_backend, model_profile, thinking_model, instant_model, search_enabled, rag_enabled, voice_enabled",
+      "Config auto-migrates from v2 to v3 on first run",
+    ],
+  },
 ];
 
 export const SERVICE_TABLE = [
   { service: "Web App", port: "3000", framework: "Next.js 16", purpose: "Chat UI, auth, voice, documents, images" },
-  { service: "Gateway", port: "8000", framework: "FastAPI", purpose: "Auth, routing, DB, inference proxy, RAG, web search, TTS, memory" },
+  { service: "Gateway", port: "8000", framework: "FastAPI", purpose: "Auth, routing, DB, inference proxy, RAG, web search, TTS, memory, summarization, SSE streaming" },
   { service: "SQLite DB", port: "—", framework: "sqlite-vec + FTS5", purpose: "Local database with vector + full-text search" },
-  { service: "Thinking LLM", port: "8080", framework: "MLX / Ollama / vLLM", purpose: "Deep reasoning with chain-of-thought" },
-  { service: "Instant LLM", port: "8081", framework: "MLX / Ollama / vLLM", purpose: "Fast responses, no CoT" },
+  { service: "Thinking LLM", port: "8080", framework: "MLX / Ollama / vLLM / OpenAI", purpose: "Deep reasoning with chain-of-thought" },
+  { service: "Instant LLM", port: "8081", framework: "MLX / Ollama / vLLM / OpenAI", purpose: "Fast responses, no CoT" },
   { service: "SearXNG", port: "8888", framework: "Docker", purpose: "Self-hosted web search (no API keys)" },
   { service: "Kokoro TTS", port: "8880", framework: "Docker (FastAPI)", purpose: "Text-to-speech (12 voices, CPU)" },
   { service: "Tailscale", port: "—", framework: "VPN mesh", purpose: "Connects server + GPU node (optional)" },
-  { service: "CLI", port: "—", framework: "Python (Typer)", purpose: "Setup wizard, service management, diagnostics" },
+  { service: "CLI", port: "—", framework: "Python (Typer)", purpose: "Setup wizard, service management, model management, diagnostics" },
 ];
