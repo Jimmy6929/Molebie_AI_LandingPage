@@ -79,7 +79,7 @@ function ExpandedPlayer({
       </div>
 
       {/* Video */}
-      <div className="flex-1 flex items-center justify-center px-4 pb-4 cursor-pointer" onClick={togglePlay}>
+      <div className="flex-1 min-h-0 flex items-center justify-center px-4 pb-4 cursor-pointer relative" onClick={togglePlay}>
         <video
           ref={videoRef}
           src={src}
@@ -113,10 +113,12 @@ function ExpandedPlayer({
         {/* Progress bar */}
         <div
           ref={progressRef}
-          className="w-full h-3 bg-bg-white/10 cursor-pointer mb-3"
+          className="w-full h-2 bg-bg-white/20 cursor-pointer mb-4 group/bar relative"
           onClick={handleProgressClick}
         >
-          <div className="h-full bg-accent-yellow" style={{ width: `${progress}%` }} />
+          <div className="h-full bg-accent-yellow relative" style={{ width: `${progress}%` }}>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-accent-yellow rounded-full shadow-[0_0_6px_rgba(255,204,0,0.6)]" />
+          </div>
         </div>
 
         <div className="flex items-center justify-between">
