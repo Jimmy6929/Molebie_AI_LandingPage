@@ -2,6 +2,7 @@ import { Nav } from "@/components/nav";
 import { Hero } from "@/components/hero";
 import { Features } from "@/components/features";
 import { Demo } from "@/components/demo";
+import { DeploymentOverview } from "@/components/deployment-overview";
 import { HowItWorks } from "@/components/how-it-works";
 import { Comparison } from "@/components/comparison";
 import { TrustBadges } from "@/components/trust-badges";
@@ -18,6 +19,7 @@ export default function Home() {
         <Hero />
         <Features />
         <Demo />
+        <DeploymentOverview />
         <HowItWorks />
         <Comparison />
         <TrustBadges />
