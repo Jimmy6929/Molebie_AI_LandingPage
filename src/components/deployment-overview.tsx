@@ -150,21 +150,26 @@ export function DeploymentOverview() {
             </div>
 
             {/* Option B */}
-            <div className="bg-base-black p-5 sm:p-6">
+            <div className="bg-base-black p-5 sm:p-6 relative">
               <div className="flex items-center gap-3 mb-5">
                 <span className="text-2xl sm:text-3xl font-black text-accent-yellow leading-none">
                   B
                 </span>
-                <div>
-                  <h4 className="text-bg-white font-black text-sm uppercase tracking-widest">
-                    Split Across Machines
-                  </h4>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-bg-white font-black text-sm uppercase tracking-widest">
+                      Split Across Machines
+                    </h4>
+                    <span className="inline-block border border-accent-yellow text-accent-yellow text-[10px] font-black uppercase tracking-widest px-2 py-0.5">
+                      Coming Soon
+                    </span>
+                  </div>
                   <p className="text-bg-white/40 text-xs font-mono">
                     Distribute the workload
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 opacity-40 pointer-events-none">
                 <div className="border-2 border-accent-yellow/30 p-4">
                   <span className="block text-xs font-mono uppercase tracking-widest text-accent-yellow mb-3">
                     Machine 1
