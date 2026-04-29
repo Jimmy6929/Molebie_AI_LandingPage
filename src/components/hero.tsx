@@ -2,7 +2,6 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { OsTabs } from "./ui/os-tabs";
-import { WaitlistForm } from "./ui/waitlist-form";
 
 export function Hero() {
   const shouldReduceMotion = useReducedMotion();
@@ -55,19 +54,6 @@ export function Hero() {
               transition={{ duration: 0.4, delay: 0.35 }}
             >
               <OsTabs inverted />
-            </motion.div>
-
-            <motion.div
-              id="updates"
-              initial={animate ? { opacity: 0 } : undefined}
-              animate={animate ? { opacity: 1 } : undefined}
-              transition={{ duration: 0.4, delay: 0.45 }}
-              className="mt-8 pt-6 border-t-2 border-base-black/20"
-            >
-              <p className="text-base-black/60 text-sm font-bold uppercase tracking-widest mb-3">
-                Get the latest updates
-              </p>
-              <WaitlistForm source="hero" inverted />
             </motion.div>
 
             {/* Product Hunt badge + card — mobile/tablet only, inside the card */}

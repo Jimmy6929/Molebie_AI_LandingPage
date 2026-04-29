@@ -1,13 +1,12 @@
 import Image from "next/image";
 import { GITHUB_REPO } from "@/lib/constants";
-import { WaitlistForm } from "./ui/waitlist-form";
 
 export function Footer() {
   return (
     <footer aria-label="Footer">
       <div className="h-[3px] bg-accent-yellow" />
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Logo & tagline */}
           <div>
             <Image
@@ -46,13 +45,6 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Stay Updated */}
-          <div>
-            <p className="text-bg-white font-black text-xs uppercase tracking-widest mb-4">
-              Stay Updated
-            </p>
-            <WaitlistForm source="footer" />
-          </div>
         </div>
 
         <div className="mt-10 pt-6 border-t border-bg-white/10">
