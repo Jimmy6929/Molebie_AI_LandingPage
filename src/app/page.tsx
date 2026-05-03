@@ -1,5 +1,6 @@
 import { Nav } from "@/components/nav";
 import { Hero } from "@/components/hero";
+import { WhyBuilding } from "@/components/why-building";
 import { Features } from "@/components/features";
 import { Demo } from "@/components/demo";
 import { DeploymentOverview } from "@/components/deployment-overview";
@@ -17,6 +18,7 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
+        <WhyBuilding />
         <Features />
         <Demo />
         <DeploymentOverview />

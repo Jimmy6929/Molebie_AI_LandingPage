@@ -34,6 +34,12 @@ export function Nav() {
         </a>
         <div className="flex items-center gap-2 sm:gap-4">
           <a
+            href="#why-building"
+            className="hidden sm:block text-sm font-bold uppercase tracking-wider text-bg-white hover:text-accent-yellow transition-colors"
+          >
+            Why
+          </a>
+          <a
             href="https://toogoodtobechu.com/"
             target="_blank"
             rel="noopener noreferrer"
