@@ -17,7 +17,8 @@ export function Footer() {
               className="h-12 sm:h-20 w-auto"
             />
             <p className="text-bg-white/60 text-sm mt-1">
-              Built for privacy-conscious developers who want to own their data.
+              Simplify. Then add lightness. &mdash; Local AI tuned for the
+              hardware you already own.
             </p>
           </div>
 
@@ -49,7 +50,7 @@ export function Footer() {
 
         <div className="mt-10 pt-6 border-t border-bg-white/10">
           <p className="text-bg-white/40 text-sm">
-            MIT License &copy; {new Date().getFullYear()}
+            v0.2.0 &middot; MIT License &copy; {new Date().getFullYear()}
           </p>
         </div>
       </div>

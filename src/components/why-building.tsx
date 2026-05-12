@@ -59,7 +59,9 @@ export function WhyBuilding() {
                 slap a UI on top. Molebie AI takes the opposite approach &mdash;
                 it obsesses over efficiency and optimisation so that even a
                 laptop with 8&ndash;16GB of RAM can deliver a genuinely good AI
-                experience.
+                experience. v0.2.0 is out today, shipping voice, vision, RAG,
+                web search, quality gates, and a terminal observability
+                dashboard &mdash; all running locally.
               </p>
             </div>
           </div>

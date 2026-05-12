@@ -105,7 +105,7 @@ export function Demo() {
                   src={`/videos/voice-demo.mp4`}
                   width={640}
                   height={360}
-                  caption="Wake word, speech-to-text, natural TTS response"
+                  caption="Wake word, faster-whisper STT, streaming Kokoro TTS"
                 />
               </div>
 
@@ -124,7 +124,7 @@ export function Demo() {
                   src={`/videos/web-search-demo.mp4`}
                   width={640}
                   height={360}
-                  caption="Real-time search with source citations"
+                  caption="Self-hosted SearXNG with inline source citations"
                 />
               </div>
             </div>

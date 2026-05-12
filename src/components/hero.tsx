@@ -16,7 +16,7 @@ export function Hero() {
       <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 w-full py-20 sm:py-28 lg:py-20 z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
           <motion.div
-            className="lg:col-span-6 xl:col-span-5 bg-accent-yellow p-4 sm:p-6 md:p-10 lg:p-12"
+            className="lg:col-span-8 xl:col-span-8 bg-accent-yellow p-4 sm:p-6 md:p-10 lg:p-12"
             initial={animate ? { opacity: 0, x: -30 } : undefined}
             animate={animate ? { opacity: 1, x: 0 } : undefined}
             transition={{
@@ -30,11 +30,11 @@ export function Hero() {
               animate={animate ? { opacity: 1 } : undefined}
               transition={{ duration: 0.4, delay: 0.15 }}
             >
-              Your AI.
+              Run a private AI.
               <br />
-              Self-hosted.
+              On your own laptop.
               <br />
-              Private.
+              One command.
             </motion.h1>
 
             <motion.p
@@ -43,9 +43,7 @@ export function Hero() {
               animate={animate ? { opacity: 1 } : undefined}
               transition={{ duration: 0.4, delay: 0.25 }}
             >
-              Voice conversation, vision, document memory, and web search
-              &mdash; running on your hardware. No cloud. No data leaves your
-              machine.
+              Voice, vision, RAG, web search. No cloud. v0.2.0 out now.
             </motion.p>
 
             <motion.div
