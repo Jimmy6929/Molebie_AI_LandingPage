@@ -309,7 +309,7 @@ export function ArchitecturePage() {
             <p className="max-w-2xl text-lg text-bg-white/60 leading-relaxed">
               Complete infrastructure and architecture of Molebie AI — covering
               all services, data flows, authentication, database schema, and
-              deployment topology across 13 detailed diagrams.
+              deployment topology across 16 detailed diagrams.
             </p>
           </AnimateIn>
         </div>

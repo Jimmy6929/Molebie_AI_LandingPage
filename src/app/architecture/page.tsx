@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Molebie AI — Architecture",
     description:
-      "13 detailed architecture diagrams covering every layer of the self-hosted AI assistant.",
+      "16 detailed architecture diagrams covering every layer of the self-hosted AI assistant.",
     url: "https://molebieai.com/architecture",
     siteName: "Molebie AI",
     type: "website",
